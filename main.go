@@ -23,6 +23,18 @@ func main() {
 		return
 	}
 
+	targetStat, err := os.Stat(os.Args[1])
+
+	if err != nil {
+		fmt.Println("Check target error: ", err)
+		return
+	}
+
+	if !targetStat.IsDir() {
+		fmt.Println("Target is not a directory.")
+		return
+	}
+
 	fmt.Println("About to process a directory: " + os.Args[1])
 
 	var choice string
@@ -37,7 +49,7 @@ func main() {
 	destinationPath := filepath.Join(scriptDir, modifiedParam)
 	fmt.Printf(`Create dirctory: "%s"
 	`, destinationPath)
-	err := os.MkdirAll(destinationPath, os.ModePerm)
+	err = os.MkdirAll(destinationPath, os.ModePerm)
 	if err != nil {
 		fmt.Println(err)
 		return
