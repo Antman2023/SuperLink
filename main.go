@@ -7,6 +7,11 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"syscall"
+)
+
+const (
+	VERSION = "v0.1.1"
 )
 
 func main() {
@@ -14,6 +19,8 @@ func main() {
 		fmt.Println("Press enter to exit...")
 		fmt.Scanln()
 	}()
+
+	fmt.Printf("SuperLink %s\n", VERSION)
 
 	scriptDir, _ := filepath.Abs(filepath.Dir(os.Args[0]))
 	fmt.Printf("Working directory: %s\n", scriptDir)
@@ -32,6 +39,17 @@ func main() {
 
 	if !targetStat.IsDir() {
 		fmt.Println("Target is not a directory.")
+		return
+	}
+
+	attributes := targetStat.Sys().(*syscall.Win32FileAttributeData)
+	if attributes.FileAttributes&syscall.FILE_ATTRIBUTE_SYSTEM != 0 {
+		fmt.Println("Target is a system directory.")
+		return
+	}
+
+	if attributes.FileAttributes&syscall.FILE_ATTRIBUTE_HIDDEN != 0 {
+		fmt.Println("Target is a hidden directory.")
 		return
 	}
 
